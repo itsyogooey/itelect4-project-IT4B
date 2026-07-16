@@ -1,28 +1,32 @@
 # IT Elective 4 - TypeScript Project
 
 ## Project Concept
-This project demonstrates TypeScript fundamentals including interfaces, types, generics, utility types, and enums. It manages student course submissions with type-safe operations.
+This TypeScript project models an educational submission system using type-safe interfaces, type aliases, enums, generics, utility types, and functions. It demonstrates how to structure user, course, and submission data with strong typing while keeping runtime code simple and maintainable.
 
-## Features
-- **Interfaces**: User, Course, and Submission types for educational management
-- **Generics**: ApiResponse wrapper for type-safe API responses, generic functions (getFirst, getById)
-- **Utility Types**: Partial, Pick, Omit, Record types for flexible type composition
-- **Enums**: SubmissionStatus and Role enums for fixed values
-- **Type Aliases**: Union types, intersection types, and structured type definitions
+## Interfaces and Types Defined So Far
+- `User` — represents a user account with name, email, role, and active status
+- `Course` — defines a course code, title, units, and semester
+- `Submission` — models a student submission with course reference, submission time, and optional score
+- `ApiResponse<T>` — generic wrapper for API-style responses
+- `UserUpdate` — partial update payload based on `User`
+- `UserPreview` — lightweight preview of a `User`
+- `PublicUser` — public-safe user shape without private fields
+- `RoleCount` — record type for counting roles
+- `ID` — union alias for numeric or string IDs
+- `Coordinate` — alias for x/y coordinate objects
+- `Formatter` — function type for formatting numeric values
+- `StringOrNumber` and `Status` — example unions for flexible values
+- `StudentWithCourse` — intersection type combining `User` and course enrollment
+- `SubmissionStatus` and `Role` — enums for fixed allowed values
 
-## How to Run
+## How to Install and Run
 ```bash
-# Install dependencies
 npm install
-
-# Type check (verify no errors)
 npx tsc --noEmit
-
-# Run the code
 npx ts-node src/index.ts
 ```
 
 ## Project Structure
-- `src/index.ts` - Main entry point with User, Course, and generic examples
-- `src/sample.ts` - Additional examples of generics and utility types
-- `types/index.ts` - All TypeScript type definitions and interfaces
+- `src/index.ts` — main entry point with sample runtime code and generic API response examples
+- `src/sample.ts` — additional utility examples including generic functions and type operations
+- `types/index.ts` — all type and interface definitions used by the project
