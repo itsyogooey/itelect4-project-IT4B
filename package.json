@@ -1,5 +1,5 @@
 {
-  "name": "itelect4-project-it3b",
+  "name": "itelect4-project-it4b",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,16 +12,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/itsyogooey/itelect4-project-IT3B.git"
+    "url": "git+https://github.com/itsyogooey/itelect4-project-IT4B.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/itsyogooey/itelect4-project-IT3B/issues"
+    "url": "https://github.com/itsyogooey/itelect4-project-IT4B/issues"
   },
-  "homepage": "https://github.com/itsyogooey/itelect4-project-IT3B#readme",
+  "homepage": "https://github.com/itsyogooey/itelect4-project-IT4B#readme",
   "devDependencies": {
     "@types/node": "^26.1.0",
     "@types/react": "^19.2.17",
