@@ -1,4 +1,4 @@
-import type { User, Course } from "../types/index";
+import type { User, Course } from "./types";
 
 function getUser(id: number): User {
   return {
@@ -54,7 +54,7 @@ console.log(foundUser?.email); // juan@example.com
 
 
 // ===== USING UTILITY TYPES =====
-import { UserUpdate, UserPreview, PublicUser, RoleCount } from "../types/index";
+import { UserUpdate, UserPreview, PublicUser, RoleCount } from "./types";
 
 // Partial<T> -- update payload only needs the changed fields
 const patch: UserUpdate = { name: "Juan D. Cruz" };
@@ -79,7 +79,7 @@ const gt1Submission: NewSubmission = makeSubmission("ITELECT4");
 
 
 // ===== USING ENUMS =====
-import { SubmissionStatus, Role } from "../types/index";
+import { SubmissionStatus, Role } from "./types";
 
 let status: SubmissionStatus = SubmissionStatus.Pending;
 console.log(SubmissionStatus[status]); // "Pending" -- reverse mapping
