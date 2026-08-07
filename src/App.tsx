@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import "./App.css";
 import UserCard from "./components/UserCard";
 import CourseCard from "./components/CourseCard";
 import SubmissionBadge from "./components/SubmissionBadge";
-import useToggle from "./hooks/useToggle";
 import usePrevious from "./hooks/usePrevious";
-import type { User, Course, Submission } from "./types";
+import useToggle from "./hooks/useToggle";
+import type { Course, Submission, User } from "./types";
 
-const student: User = {
+const MOCK_USER: User = {
   id: 1,
   name: "Juan dela Cruz",
   email: "juan@example.com",
@@ -15,128 +15,83 @@ const student: User = {
   isActive: true,
 };
 
-const mockCourses: Course[] = [
-  {
-    code: "ITELECT4",
-    title: "IT Elective 4",
-    units: 3,
-    semester: "1st Semester 2026-2027",
-  },
-  {
-    code: "WEB101",
-    title: "Web Development Basics",
-    units: 4,
-    semester: "2nd Semester 2026-2027",
-  },
+const MOCK_COURSES: Course[] = [
+  { code: "ITELECT4", title: "IT Elective 4", units: 3, semester: "1st Semester 2026-2027" },
+  { code: "WEB101", title: "Web Development Basics", units: 4, semester: "2nd Semester 2026-2027" },
 ];
 
-const mockSubmission: Submission = {
+const MOCK_SUBMISSION: Submission = {
   id: 1,
   studentId: 1,
   courseCode: "ITELECT4",
   repoUrl: "https://github.com/example/repo",
-  submittedAt: new Date("2026-08-07T17:39:15"),
+  submittedAt: new Date(),
 };
 
-function App() {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+export default function App() {
+  const [user, setUser] = useState<User | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
   const [showDetails, toggleDetails] = useToggle(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const previousSearch = usePrevious(searchTerm);
+
+  const prevQuery = usePrevious(query);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCourses(mockCourses);
-      setIsLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
+    const id = setTimeout(() => {
+      setUser(MOCK_USER);
+      setCourses(MOCK_COURSES);
+      setLoading(false);
+    }, 300);
+    return () => clearTimeout(id);
   }, []);
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setSearchTerm(event.target.value);
-  };
+  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => setQuery(e.target.value);
 
-  const handleUserSelect = (user: User): void => {
-    setSelectedUser(user);
-  };
+  const filtered = courses.filter((c) => c.title.toLowerCase().includes(query.toLowerCase()));
 
-  const focusSearch = (): void => {
-    searchInputRef.current?.focus();
-  };
-
-  const filteredCourses = courses.filter((course) =>
-    course.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  if (isLoading) {
-    return <p>Loading courses...</p>;
-  }
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="app">
-      <section id="center">
-        <div>
-          <h1>GT2 - Part 2 of 3</h1>
-          <h2>Hooks, state, and typed events</h2>
-        </div>
-      </section>
+      <header>
+        <h1>GT2 — Part 2</h1>
+      </header>
 
       <section>
-        <h2>Search Courses</h2>
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+        <label htmlFor="search">Search courses</label>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <input
-            ref={searchInputRef}
-            type="text"
+            id="search"
+            ref={inputRef}
+            value={query}
+            onChange={handleChange}
             placeholder="Search courses..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            style={{ padding: "8px 10px", minWidth: 240 }}
           />
-          <button type="button" onClick={focusSearch}>
-            Focus search
-          </button>
+          <button type="button" onClick={() => inputRef.current?.focus()}>Focus</button>
         </div>
-        {previousSearch !== undefined && previousSearch !== searchTerm && (
-          <p className="previous-search">Previous search: "{previousSearch}"</p>
-        )}
+        {prevQuery !== undefined && prevQuery !== query && <small>Previous: {prevQuery}</small>}
       </section>
 
       <section>
-        <h2>User Card</h2>
-        <UserCard user={student} onSelect={handleUserSelect} />
-        {selectedUser && <p>Selected: {selectedUser.name}</p>}
+        <h2>User</h2>
+        {user && <UserCard user={user} onSelect={setUser} />}
       </section>
 
       <section>
-        <h2>Available Courses</h2>
-        <button type="button" onClick={toggleDetails}>
-          {showDetails ? "Hide details" : "Show details"}
-        </button>
-        {showDetails && (
-          <div style={{ marginTop: 12, padding: 12, border: "1px solid #ddd", borderRadius: 8 }}>
-            <p>Showing {filteredCourses.length} course(s)</p>
-            <p>Search term: "{searchTerm || "(empty)"}"</p>
-          </div>
-        )}
-        {filteredCourses.length === 0 ? (
-          <p>No courses match your search.</p>
-        ) : (
-          filteredCourses.map((course) => <CourseCard key={course.code} course={course} />)
-        )}
+        <h2>Courses</h2>
+        <button type="button" onClick={toggleDetails}>{showDetails ? "Hide" : "Show"} details</button>
+        {showDetails && <div>Showing {filtered.length} course(s)</div>}
+        <div style={{ display: "grid", gap: 12, marginTop: 8 }}>
+          {filtered.map((c) => <CourseCard key={c.code} course={c} />)}
+        </div>
       </section>
 
       <section>
-        <h2>Recent Submission</h2>
-        <SubmissionBadge submission={mockSubmission}>
-          <p>Status: Pending</p>
-        </SubmissionBadge>
+        <h2>Submission</h2>
+        <SubmissionBadge submission={MOCK_SUBMISSION}><span>Pending</span></SubmissionBadge>
       </section>
     </div>
   );
 }
-
-export default App;
