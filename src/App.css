@@ -1,3 +1,0 @@
-/* App-specific styles are handled by Tailwind CSS. */
-@import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));

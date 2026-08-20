@@ -11,5 +11,5 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "moduleResolution": "node16"
   },
-  "include": ["src/**/*","types/**/*"]
+  "include": ["src/**/*","types/**/*", "vite.config.ts"]
 }
