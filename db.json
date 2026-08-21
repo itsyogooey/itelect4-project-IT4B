@@ -1,0 +1,13 @@
+{
+  "users": [
+    { "id": "u-1", "name": "Gwyneth Salazar", "email": "gwyneth_salazar@dlsl.edu.ph", "role": "student", "isActive": true }
+  ],
+  "projects": [
+    { "id": "p-itelect4", "slug": "itelect4-submission", "title": "IT Elective 4 Submission", "description": "Build and submit the individual project for IT Elective 4.", "dueDate": "2026-09-12T23:59:00.000Z" },
+    { "id": "p-portfolio", "slug": "portfolio-review", "title": "Portfolio Review", "description": "Prepare a polished portfolio review for the end of the session.", "dueDate": "2026-10-03T23:59:00.000Z" }
+  ],
+  "submissions": [
+    { "id": "s-1", "studentId": "u-1", "projectId": "p-itelect4", "repoUrl": "github.com/gwyneth/itelect4-project", "submittedAt": "2026-08-01T09:00:00.000Z", "score": 95 },
+    { "id": "s-2", "studentId": "u-1", "projectId": "p-portfolio", "repoUrl": "github.com/gwyneth/portfolio-review", "submittedAt": "2026-07-18T09:00:00.000Z" }
+  ]
+}
