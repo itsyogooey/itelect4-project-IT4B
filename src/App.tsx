@@ -6,19 +6,19 @@ import DashboardPage from "./pages/DashboardPage";
 import CoursesPage from "./pages/CoursesPage";
 import CourseDetailPage from "./pages/CourseDetailPage";
 import LoginPage from "./pages/LoginPage";
-import SubmissionsPage from "./pages/SubmissionsPage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="courses" element={<CoursesPage />} />
-        <Route path="courses/:code" element={<CourseDetailPage />} />
         <Route path="login" element={<LoginPage />} />
-        <Route element={<ProtectedRoute />}> {/* <-- the guard */}
-          <Route path="submissions" element={<SubmissionsPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="projects" element={<CoursesPage />} />
+          <Route path="projects/:slug" element={<CourseDetailPage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
