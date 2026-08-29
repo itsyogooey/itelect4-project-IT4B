@@ -8,7 +8,7 @@ function NotFoundPage() {
       </h2>
       <Link
         to="/"
-        className="text-blue-600 underline hover:text-blue-700"
+        className="text-slate-700 underline hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
       >
         Go back to the Dashboard
       </Link>

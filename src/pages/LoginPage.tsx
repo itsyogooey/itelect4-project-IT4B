@@ -1,30 +1,42 @@
-// src/pages/LoginPage.tsx
 import { useNavigate } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import useAuthStore from "../store/authStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { loginSchema, type LoginFormValues } from "@/schemas/loginSchema";
 
 function LoginPage() {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const handleLogin = () => {
-    login("Gwyneth");
+  const handleLogin = ({ email }: LoginFormValues) => {
+    login("Gwyneth A. Salazar", "student", "student-1");
     navigate("/");
   };
 
   return (
-    <main className="max-w-md mx-auto mt-20 bg-white p-8 rounded-lg shadow-sm dark:bg-gray-800">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-        Login
-      </h2>
-      <p className="mt-2 text-gray-700 dark:text-gray-300">
-        Log in to access Gwyneth’s dashboard and course tracker.
+    <main className="page-frame page-panel login-panel">
+      <p className="page-eyebrow">Campus lost and found</p>
+      <h2 className="page-title">Sign in</h2>
+      <p className="page-intro">
+        Sign in to browse campus lost and found items.
       </p>
-      <button
-        onClick={handleLogin}
-        className="mt-6 w-full rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
-      >
-        Login as Gwyneth
-      </button>
+
+      <form className="mt-6 space-y-4" onSubmit={handleSubmit(handleLogin)}>
+        <Label htmlFor="email" className="block">
+          Email address
+          <Input id="email" type="email" placeholder="Email address" {...register("email")} />
+        </Label>
+        {errors.email && <p role="alert" className="text-xs font-semibold text-red-600">{errors.email.message}</p>}
+        <Button type="submit" disabled={isSubmitting} className="mt-2 w-full">
+          Login
+        </Button>
+      </form>
     </main>
   );
 }

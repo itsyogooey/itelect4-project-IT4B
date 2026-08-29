@@ -1,41 +1,80 @@
-// src/pages/DashboardPage.tsx
-import { useState } from "react";
-import type { User } from "../types/index";
-import UserCard from "../components/UserCard";
-import useToggle from "../hooks/useToggle";
-import { student } from "../data/mockData";
+import { useEffect, useState } from "react";
+import type { ApiProject } from "../types/index";
+import useUIStore from "../store/uiStore";
+import ItemCard from "../components/ItemCard";
+
+const dashboardItems: ApiProject[] = [
+  {
+    id: "Wallet-872361",
+    slug: "wallet",
+    title: "Black Wallet",
+    description: "Black wallet with cherry keychain.",
+    dueDate: "2026-08-27T04:00:00.000Z",
+    category: "Wallet",
+    location: "MB Building",
+    status: "Lost",
+    postedBy: "Student1",
+    reportedDate: "2026-08-27",
+  },
+  {
+    id: "Accessory-459201",
+    slug: "pearl-earrings",
+    title: "Pearl Earrings",
+    description: "White pearl earrings.",
+    dueDate: "2026-08-27T04:00:00.000Z",
+    category: "Accessory",
+    location: "MB Building",
+    status: "Lost",
+    postedBy: "Student1",
+    reportedDate: "2026-08-27",
+  },
+  {
+    id: "Vl2r8lGIb5o",
+    slug: "cellphone",
+    title: "iPhone 16",
+    description: "iPhone 16 reported missing.",
+    dueDate: "2026-08-27T04:00:00.000Z",
+    category: "Electronics",
+    location: "CBEAM",
+    status: "Lost",
+    postedBy: "Student1",
+    reportedDate: "2026-08-27",
+  },
+  {
+    id: "Keys-2046",
+    slug: "keychain",
+    title: "Blue Keychain",
+    description: "Blue keychain with two keys.",
+    dueDate: "2026-08-26T04:00:00.000Z",
+    category: "Accessory",
+    location: "Library",
+    status: "Lost",
+    postedBy: "Student1",
+    reportedDate: "2026-08-26",
+  },
+];
 
 function DashboardPage() {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [showDetails, toggleDetails] = useToggle(false);
+  const [items, setItems] = useState<ApiProject[]>([]);
+  const claimedItemIds = useUIStore((state) => state.claimedItemIds);
+  const claimItem = useUIStore((state) => state.claimItem);
+
+  useEffect(() => {
+    setItems(dashboardItems);
+  }, []);
 
   return (
-    <main className="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-sm dark:bg-gray-800">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-        Gwyneth’s Dashboard
-      </h2>
-      <p className="mt-2 text-gray-700 dark:text-gray-300">
-        Welcome to my personal dashboard — track submissions and progress here.
-      </p>
+    <main className="page-frame page-panel">
+      <p className="page-eyebrow">Campus lost & found / 2026</p>
+      <h2 className="page-title">Dashboard</h2>
+      <p className="page-intro">Browse the latest lost and found reports on campus.</p>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <UserCard user={student} onSelect={setSelectedUser} />
+      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        {items.filter((item) => !claimedItemIds.includes(item.id)).map((item) => (
+          <ItemCard key={item.id} item={item} onClaim={() => claimItem(item.id, item.title, "Claimed")} onFound={() => claimItem(item.id, item.title, "Found")} />
+        ))}
       </div>
 
-      <button
-        onClick={toggleDetails}
-        className="mt-4 rounded-md bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
-      >
-        {showDetails ? "Hide" : "Show"} Details
-      </button>
-
-      {showDetails && selectedUser && (
-        <div className="mt-4 rounded bg-gray-50 p-3 dark:bg-gray-700">
-          <p className="text-gray-700 dark:text-gray-300">
-            Selected: <strong>{selectedUser.name}</strong> ({selectedUser.role})
-          </p>
-        </div>
-      )}
     </main>
   );
 }

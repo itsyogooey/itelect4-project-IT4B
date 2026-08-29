@@ -1,0 +1,54 @@
+{
+  "users": [],
+  "projects": [
+    {
+      "slug": "wallet-1787846962532",
+      "title": "Wallet",
+      "description": "Black Wallet with cherry keychain • Category: Wallet • Status: Lost • Location: MB Building • Reported: 2026-08-27",
+      "dueDate": "2026-08-27T04:00:00.000Z",
+      "category": "Wallet",
+      "location": "MB Building",
+      "status": "Lost",
+      "postedBy": "Student1",
+      "reportedDate": "2026-08-27",
+      "id": "Wallet-872361"
+    },
+    {
+      "slug": "earrings-1787847411873",
+      "title": "Earrings",
+      "description": "White pearl • Category: Accessory • Status: Lost • Location: MB Building • Reported: 2026-08-27",
+      "dueDate": "2026-08-27T04:00:00.000Z",
+      "category": "Accessory",
+      "location": "MB Building",
+      "status": "Lost",
+      "postedBy": "Student1",
+      "reportedDate": "2026-08-27",
+      "id": "Accessory-459201"
+    },
+    {
+      "slug": "cellphone-1787849592812",
+      "title": "Cellphone",
+      "description": "Iphone16 • Category: Electronics • Status: Lost • Location: CBEAM • Reported: 2026-08-27",
+      "dueDate": "2026-08-27T04:00:00.000Z",
+      "category": "Electronics",
+      "location": "CBEAM",
+      "status": "Lost",
+      "postedBy": "Student1",
+      "reportedDate": "2026-08-27",
+      "id": "Vl2r8lGIb5o"
+    },
+    {
+      "slug": "keychain-1787763200000",
+      "title": "Blue Keychain",
+      "description": "Blue keychain with two keys • Category: Accessory • Status: Lost • Location: Library • Reported: 2026-08-26",
+      "dueDate": "2026-08-26T04:00:00.000Z",
+      "category": "Accessory",
+      "location": "Library",
+      "status": "Lost",
+      "postedBy": "Student1",
+      "reportedDate": "2026-08-26",
+      "id": "Keys-2046"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
