@@ -12,7 +12,6 @@ function CoursesPage() {
   const setSearchTerm = useUIStore((state) => state.setSearchTerm);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const previousSearch = usePrevious(searchTerm);
-
   const { data: projects, isPending, isError } = useQuery<ApiProject[]>({
     queryKey: ["projects"],
     queryFn: fetchProjects,

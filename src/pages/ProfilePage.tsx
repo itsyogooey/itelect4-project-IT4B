@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router";
+import useAuthStore from "../store/authStore";
 import useUIStore from "../store/uiStore";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 function ProfilePage() {
   const navigate = useNavigate();
   const claimedItems = useUIStore((state) => state.claimedItems);
+  const userName = useAuthStore((state) => state.userName);
 
   return (
     <main className="page-frame page-panel">
@@ -18,12 +18,7 @@ function ProfilePage() {
         <div className="space-y-4 text-sm text-slate-600 dark:text-slate-300">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Name</p>
-            <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Gwyneth A. Salazar</p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Email</p>
-            <Label htmlFor="profile-email" className="sr-only">Email</Label>
-            <Input id="profile-email" value="Student1@example.com" readOnly className="mt-1 text-lg font-semibold" />
+            <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{userName || "Student"}</p>
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Program</p>

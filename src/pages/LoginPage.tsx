@@ -14,8 +14,8 @@ function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const handleLogin = ({ email }: LoginFormValues) => {
-    login("Gwyneth A. Salazar", "student", "student-1");
+  const handleLogin = ({ username }: LoginFormValues) => {
+    login(username, "student", "student-1");
     navigate("/");
   };
 
@@ -28,11 +28,11 @@ function LoginPage() {
       </p>
 
       <form className="mt-6 space-y-4" onSubmit={handleSubmit(handleLogin)}>
-        <Label htmlFor="email" className="block">
-          Email address
-          <Input id="email" type="email" placeholder="Email address" {...register("email")} />
+        <Label htmlFor="username" className="block">
+          Username
+          <Input id="username" type="text" placeholder="Username" {...register("username")} />
         </Label>
-        {errors.email && <p role="alert" className="text-xs font-semibold text-red-600">{errors.email.message}</p>}
+        {errors.username && <p role="alert" className="text-xs font-semibold text-red-600">{errors.username.message}</p>}
         <Button type="submit" disabled={isSubmitting} className="mt-2 w-full">
           Login
         </Button>
