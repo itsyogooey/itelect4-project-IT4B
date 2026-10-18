@@ -1,4 +1,4 @@
-import type { ApiResponse, Project } from "./types/index";
+import type { ApiItem, ApiResponse } from "./types/index";
 
 export function getFirst<T>(items: T[]): T | undefined {
   return items[0];
@@ -8,9 +8,9 @@ export function getById<T extends { id: string }>(items: T[], id: string): T | u
   return items.find((item: T) => item.id === id);
 }
 
-export function createProjectResponse(project: Project): ApiResponse<Project> {
+export function createItemResponse(item: ApiItem): ApiResponse<ApiItem> {
   return {
-    data: project,
+    data: item,
     success: true,
   };
 }
