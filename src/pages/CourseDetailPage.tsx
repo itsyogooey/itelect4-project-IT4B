@@ -1,31 +1,37 @@
-// src/pages/CourseDetailPage.tsx
+// The item detail page (route /projects/:id).
+// GT3 asked json-server for /projects?slug=... and read matches[0]. The real
+// API has a route for one item, so there is no array to unwrap.
 import { useParams, useNavigate } from "react-router";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { ApiProject } from "../types/index";
+import type { ApiItem, Location } from "../types/index";
 import CourseCard from "../components/CourseCard";
-import useAuthStore from "../store/authStore";
-import { fetchProjectBySlug } from "../api/client";
+import { fetchItemById, fetchLocationByCode } from "../api/client";
 
 function CourseDetailPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const userName = useAuthStore((state) => state.userName);
 
-  const { data: project, isPending, isError } = useQuery<ApiProject>({
-    queryKey: ["projects", slug],
-    queryFn: () => fetchProjectBySlug(slug ?? ""),
-    enabled: Boolean(slug),
+  const { data: item, isPending, isError, error } = useQuery<ApiItem>({
+    queryKey: ["items", id],
+    queryFn: () => fetchItemById(id ?? ""),
+    enabled: Boolean(id),
   });
 
-  if (isPending) return <div className="p-6 animate-pulse">Loading project...</div>;
+  // The second public route: GET /api/locations/:code, one object.
+  const { data: location } = useQuery<Location>({
+    queryKey: ["locations", item?.locationCode],
+    queryFn: () => fetchLocationByCode(item?.locationCode ?? ""),
+    enabled: Boolean(item?.locationCode),
+  });
 
-  if (isError || !project) {
+  if (isPending) return <div className="p-6 animate-pulse">Loading item...</div>;
+
+  if (isError || !item) {
     return (
       <main className="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-sm dark:bg-gray-800">
         <h2 className="text-2xl font-bold text-red-700">Item Not Found</h2>
         <p className="mt-2 text-gray-700 dark:text-gray-300">
-          No reported item matches the code <strong>{slug}</strong>.
+          {error?.message ?? "No reported item matches"} <strong>{id}</strong>
         </p>
         <button
           type="button"
@@ -41,13 +47,9 @@ function CourseDetailPage() {
   return (
     <main className="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-sm dark:bg-gray-800">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-        Item Details — {project.title}
+        Item Details — {item.title}
       </h2>
-      <CourseCard course={project} />
-
-      <p className="mt-4 text-gray-700 dark:text-gray-300">
-        {project.description}
-      </p>
+      <CourseCard course={item} locationName={location?.name} />
 
       <div className="mt-6 flex flex-wrap gap-3">
         <button

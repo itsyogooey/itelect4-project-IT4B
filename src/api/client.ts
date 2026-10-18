@@ -1,75 +1,130 @@
-import type { ApiProject, ApiUser, NewProject } from "../types/index";
+import type {
+  ApiItem,
+  ApiUser,
+  AuthReply,
+  ItemUpdate,
+  Location,
+  NewItem,
+} from "../types/index";
+import useAuthStore from "../store/authStore";
 
-export const API_URL = "http://localhost:3001";
+// ===== GT3: one hard-coded host, and no token anywhere =====
+// export const API_URL = "http://localhost:3001";   // json-server
+// export async function fetchProjects(): Promise<ApiProject[]> {
+//   const res = await fetch(`${API_URL}/projects`);
+//   if (!res.ok) throw new Error("Could not load projects");
+//   return res.json();
+// }
+// ... and the same lines again for every call, each with a guessed message.
+//
+// NOTE: The host was written into the code, so the deployed app would still
+//       call the laptop. Nothing sent a token. And every error message was
+//       invented here instead of read from the API.
+// ===== GT4 Part 2: one request() helper, and the host from the env =====
 
-export async function fetchUsers(): Promise<ApiUser[]> {
-  const res = await fetch(`${API_URL}/users`);
+// Vite only exposes variables that start with VITE_, and it bakes the value
+// in at BUILD time. Changing it in Vercel needs a new deploy to take effect.
+export const API_URL: string = import.meta.env.VITE_API_URL;
+
+// A clear sentence now beats every call going to "undefined/api/items".
+if (!API_URL) {
+  throw new Error(
+    "VITE_API_URL is missing. Copy .env.example to .env, fill it in, " +
+      "and restart npm run dev.",
+  );
+}
+
+// Every call goes through here: the host, the JSON header, the token when
+// there is one, and the API's own message when it refuses.
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  // getState(), not the hook: this is not a component. It only needs the
+  // token as it is at the moment of the call.
+  const token = useAuthStore.getState().token;
+
+  const res = await fetch(`${API_URL}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      // Exactly what requireAuth reads: "Bearer", one space, the token.
+      // No token means no header, which is what the public routes want.
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...init.headers,
+    },
+  });
+
   if (!res.ok) {
-    throw new Error("Could not load users");
+    // Every refusal from this API has a message field. Show that sentence.
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.message ?? `Request failed (${res.status})`);
   }
+
+  // DELETE answers 204 with no body, so there is nothing to parse.
+  if (res.status === 204) {
+    return undefined as T;
+  }
+
   return res.json();
 }
 
-export async function fetchProjects(): Promise<ApiProject[]> {
-  const res = await fetch(`${API_URL}/projects`);
-  if (!res.ok) {
-    throw new Error("Could not load projects");
-  }
-  return res.json();
+// ---- locations: public reference data. No token needed.
+
+export function fetchLocations(): Promise<Location[]> {
+  return request<Location[]>("/api/locations");
 }
 
-export async function fetchProjectBySlug(slug: string): Promise<ApiProject> {
-  const res = await fetch(`${API_URL}/projects?slug=${encodeURIComponent(slug)}`);
-  if (!res.ok) {
-    throw new Error("Could not load that project");
-  }
-  const matches: ApiProject[] = await res.json();
-  if (matches.length === 0) {
-    throw new Error(`No project found with slug "${slug}".`);
-  }
-  return matches[0];
+export function fetchLocationByCode(code: string): Promise<Location> {
+  return request<Location>(`/api/locations/${encodeURIComponent(code)}`);
 }
 
-export async function fetchProjectById(id: string): Promise<ApiProject | null> {
-  const res = await fetch(`${API_URL}/projects/${encodeURIComponent(id)}`);
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error("Could not load that item");
-  return res.json();
+// ---- items: private. request() adds the token automatically.
+
+export function fetchItems(): Promise<ApiItem[]> {
+  return request<ApiItem[]>("/api/items");
 }
 
-export async function createProject(newProject: NewProject): Promise<ApiProject> {
-  const res = await fetch(`${API_URL}/projects`, {
+export function fetchItemById(id: string): Promise<ApiItem> {
+  return request<ApiItem>(`/api/items/${encodeURIComponent(id)}`);
+}
+
+export function createItem(newItem: NewItem): Promise<ApiItem> {
+  return request<ApiItem>("/api/items", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newProject),
+    body: JSON.stringify(newItem),
   });
-  if (!res.ok) {
-    throw new Error("Could not save the item");
-  }
-  return res.json();
 }
 
-export async function updateProject(
-  id: string,
-  project: Partial<NewProject>
-): Promise<ApiProject> {
-  const res = await fetch(`${API_URL}/projects/${encodeURIComponent(id)}`, {
+export function updateItem(id: string, changes: ItemUpdate): Promise<ApiItem> {
+  return request<ApiItem>(`/api/items/${encodeURIComponent(id)}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(project),
+    body: JSON.stringify(changes),
   });
-  if (!res.ok) {
-    throw new Error("Could not update the item");
-  }
-  return res.json();
 }
 
-export async function deleteProject(id: string): Promise<void> {
-  const res = await fetch(`${API_URL}/projects/${encodeURIComponent(id)}`, {
+export function deleteItem(id: string): Promise<void> {
+  return request<void>(`/api/items/${encodeURIComponent(id)}`, {
     method: "DELETE",
   });
-  if (!res.ok) {
-    throw new Error("Could not delete the item");
-  }
 }
 
+// ---- auth: the two routes that make a session exist
+
+export function registerUser(body: {
+  name: string;
+  email: string;
+  password: string;
+}): Promise<ApiUser> {
+  return request<ApiUser>("/api/auth/register", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function loginUser(body: {
+  email: string;
+  password: string;
+}): Promise<AuthReply> {
+  return request<AuthReply>("/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}

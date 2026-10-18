@@ -1,43 +1,66 @@
+// ===== GT1-GT3: shapes written for json-server and db.json =====
+// export interface Project { id: string; slug: string; title: string;
+//   description: string; dueDate: Date; category?: string; location?: string;
+//   status?: "Lost"; postedBy?: string; reportedDate?: string; }
+// export type ApiProject = Omit<Project, "id" | "dueDate"> & { id: string; dueDate: string };
+// export type NewProject = Omit<ApiProject, "id">;
+// export type NewSubmission = ReturnType<typeof getSubmissionTemplate>;
+//   -> the template invented studentId: "student-1" and submittedAt: new Date()
+//
+// NOTE: json-server stored whatever the browser sent, so the browser made up
+//       the owner and the date. The real API takes the owner from the token
+//       and the date from the schema default, so neither is sent any more.
+// ===== GT4 Part 2: the same three interfaces as itelect4-backend =====
+
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  role: "student" | "faculty";
+  role: "student" | "admin" | "instructor";
   isActive: boolean;
-  score?: number;
-  course?: string;
 }
 
-export type ApiUser = Omit<User, "id"> & { id: string };
-
-export interface Project {
-  id: string;
-  slug: string;
+export interface Item {
+  id: number;
   title: string;
-  description: string;
-  dueDate: Date;
-  category?: string;
-  location?: string;
-  status?: "Lost";
-  postedBy?: string;
-  reportedDate?: string;
+  status: "lost" | "found" | "claimed";
+  locationCode: string;
+  reward?: number;
+  createdAt: Date;
+  ownerId: number;
 }
 
-export interface Course {
+// Reference data: the campus places the Report form's dropdown reads.
+export interface Location {
   code: string;
-  title: string;
-  units: number;
-  semester: string;
+  name: string;
 }
 
-export interface Submission {
+// What GET /api/items sends back. MongoDB ids are 24 hex characters, and a
+// date in JSON is an ISO string, never a Date object.
+export type ApiItem = Omit<Item, "id" | "ownerId" | "createdAt"> & {
+  id: string;        // from MongoDB's _id
+  ownerId: string;   // the owner's _id, filled in by the API from the token
+  createdAt: string; // ISO string, filled in by the API
+};
+
+// What we SEND when reporting an item. No ownerId and no createdAt: the
+// server fills both in, so sending them would be ignored at best.
+// itelect4-backend's NewItemBody is this same Pick.
+export type NewItem = Pick<Item, "title" | "status" | "reward" | "locationCode">;
+
+// What /api/auth/register sends back, and the user inside the login reply.
+export type ApiUser = Omit<User, "id"> & {
   id: string;
-  itemId: string;
-  studentId: string;
-  submittedAt: Date;
-  status: "Pending" | "Verified" | "Rejected";
+};
+
+// What /api/auth/login sends back. The token goes in the Authorization header.
+export interface AuthReply {
+  token: string;
+  user: ApiUser;
 }
 
+// ===== Kept from GT1: generic and utility types =====
 export interface ApiResponse<T> {
   data: T;
   success: boolean;
@@ -45,42 +68,12 @@ export interface ApiResponse<T> {
 }
 
 export enum ItemStatus {
-  Lost = "Lost",
-  Found = "Found",
-  Claimed = "Claimed",
+  Lost = "lost",
+  Found = "found",
+  Claimed = "claimed",
 }
-
-export enum Role {
-  Student = "student",
-  Faculty = "faculty",
-}
-
-export enum SubmissionStatus {
-  Pending = "Pending",
-  Verified = "Verified",
-  Rejected = "Rejected",
-}
-
-export type ApiProject = Omit<Project, "id" | "dueDate"> & {
-  id: string;
-  dueDate: string;
-};
-
-export type NewProject = Omit<ApiProject, "id">;
 
 export type UserPreview = Pick<User, "id" | "name" | "email">;
-export type PublicProject = Omit<ApiProject, "postedBy">;
-export type UserUpdate = Partial<User>;
-export type RoleCount = Record<"student" | "faculty", number>;
-
-function getSubmissionTemplate() {
-  return {
-    id: "template-1",
-    itemId: "item-1",
-    studentId: "student-1",
-    submittedAt: new Date(),
-    status: "Pending" as const,
-  };
-}
-
-export type NewSubmission = ReturnType<typeof getSubmissionTemplate>;
+export type PublicItem = Omit<ApiItem, "ownerId">;
+export type ItemUpdate = Partial<NewItem>;
+export type RoleCount = Record<User["role"], number>;

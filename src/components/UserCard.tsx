@@ -1,23 +1,23 @@
 import { useState } from "react";
-import type { ApiProject, User } from "../types/index";
+import type { ApiItem, ApiUser } from "../types/index";
 
 export interface UserCardProps {
-  readonly user: User;
+  readonly user: ApiUser;
   readonly showDetails?: boolean;
   readonly onToggleDetails?: () => void;
   readonly onViewItems?: () => void;
-  readonly items?: ApiProject[];
+  readonly items?: ApiItem[];
 }
+
+const ROLE_LABELS: Record<ApiUser["role"], string> = {
+  student: "Student",
+  admin: "Admin",
+  instructor: "Instructor",
+};
 
 export default function UserCard({ user, showDetails = false, onToggleDetails, onViewItems, items = [] }: UserCardProps) {
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
-  let roleLabel = "Student";
-
-  if (user.role === "faculty") {
-    roleLabel = "Faculty";
-  }
-
-  const statusText = "Lost — Blue Water Bottle";
+  const roleLabel = ROLE_LABELS[user.role];
 
   return (
     <div className="user-card border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
@@ -36,32 +36,21 @@ export default function UserCard({ user, showDetails = false, onToggleDetails, o
       {showDetails && (
         <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
           <p>
-            <span className="font-semibold text-slate-800 dark:text-slate-100">Course:</span> {user.course ?? "BS Information Technology"}
-          </p>
-          <p>
             <span className="font-semibold text-slate-800 dark:text-slate-100">Email:</span> {user.email}
-          </p>
-          <p className="rounded-md bg-slate-100 px-2 py-2 dark:bg-slate-800">
-            <span className="font-semibold text-slate-800 dark:text-slate-100">Status:</span> {statusText}
           </p>
           <div className="space-y-3">
             {items.map((item) => {
               const isExpanded = expandedItemId === item.id;
               return (
                 <div key={item.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-semibold text-slate-800 dark:text-slate-100">{item.title}</p>
-                      <p className="mt-1 text-xs text-slate-500">{item.status ?? "Lost"} · {item.location ?? "Campus"}</p>
-                    </div>
-                  </div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-100">{item.title}</p>
+                  <p className="mt-1 text-xs text-slate-500">{item.status} · {item.locationCode}</p>
                   {isExpanded && (
                     <div className="mt-3 space-y-1 border-t border-slate-200 pt-3 text-sm dark:border-slate-700">
-                      <p>Category: {item.category ?? "Uncategorized"}</p>
-                      <p>Status: {item.status ?? "Lost"}</p>
-                      <p>Location: {item.location ?? "Not specified"}</p>
-                      <p className="text-xs text-slate-500">Posted {new Date(item.reportedDate ?? item.dueDate).toLocaleDateString()}</p>
-                      <p className="pt-1">{item.description.split("• Category:")[0].trim()}</p>
+                      <p>Status: {item.status}</p>
+                      <p>Location: {item.locationCode}</p>
+                      <p>Reward: PHP {item.reward ?? 0}</p>
+                      <p className="text-xs text-slate-500">Posted {new Date(item.createdAt).toLocaleDateString()}</p>
                     </div>
                   )}
                   <button
