@@ -77,3 +77,15 @@ export type UserPreview = Pick<User, "id" | "name" | "email">;
 export type PublicItem = Omit<ApiItem, "ownerId">;
 export type ItemUpdate = Partial<NewItem>;
 export type RoleCount = Record<User["role"], number>;
+
+// ===== GT5: what POST /api/ai sends back =====
+// itelect4-backend's ItemDraft type is derived from a Zod schema in
+// src/schemas/itemDraft.ts, and this has to say the same thing. Nothing
+// checks that the two agree -- you do.
+export interface AiItemDraft {
+  title: string;
+  summary: string;
+  category: "electronics" | "wallet-or-id" | "bag" | "accessory" | "clothing" | "other";
+  clarity: "clear" | "needs-details" | "too-vague";
+  tips: string[];
+}

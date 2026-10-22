@@ -1,4 +1,5 @@
 import type {
+  AiItemDraft,
   ApiItem,
   ApiUser,
   AuthReply,
@@ -126,5 +127,17 @@ export function loginUser(body: {
   return request<AuthReply>("/api/auth/login", {
     method: "POST",
     body: JSON.stringify(body),
+  });
+}
+
+// ===== GT5: one more private call =====
+// ---- ai: private, like items. The token goes on automatically, which
+// matters more here than anywhere: without it, anyone could spend the
+// Gemini quota. No key and no Gemini address are in this file -- the
+// browser only ever calls our own API.
+export function askAi(prompt: string): Promise<AiItemDraft> {
+  return request<AiItemDraft>("/api/ai", {
+    method: "POST",
+    body: JSON.stringify({ prompt }),
   });
 }

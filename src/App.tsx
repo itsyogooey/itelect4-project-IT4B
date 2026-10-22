@@ -8,6 +8,7 @@ import CourseDetailPage from "./pages/CourseDetailPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
+import AiHelperPage from "./pages/AiHelperPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
@@ -22,6 +23,9 @@ function App() {
           <Route path="projects" element={<CoursesPage />} />
           <Route path="projects/:id" element={<CourseDetailPage />} />
           <Route path="profile" element={<ProfilePage />} />
+          {/* GT5: behind the same guard -- the API refuses it without a
+              token anyway, so the page should not offer it. */}
+          <Route path="ai-helper" element={<AiHelperPage />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
