@@ -34,6 +34,8 @@ function Layout() {
           <div className="nav-links">
             {isLoggedIn && <NavLink to="/" end className={linkClass}>Dashboard</NavLink>}
             {isLoggedIn && <NavLink to="/projects" className={linkClass}>Items</NavLink>}
+            {/* GT5: the one page that talks to Gemini (through our API) */}
+            {isLoggedIn && <NavLink to="/ai-helper" className={linkClass}>AI Helper</NavLink>}
             {isLoggedIn && <NavLink to="/profile" className={linkClass}>Profile</NavLink>}
 
             {!isLoggedIn ? (
